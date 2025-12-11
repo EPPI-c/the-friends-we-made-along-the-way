@@ -17,16 +17,16 @@ function M.create_coord(x, y)
 end
 
 function M.deepcopy(obj, seen)
-	-- Handle non-tables and previously-seen tables.
-	if type(obj) ~= 'table' then return obj end
-	if seen and seen[obj] then return seen[obj] end
+    -- Handle non-tables and previously-seen tables.
+    if type(obj) ~= 'table' then return obj end
+    if seen and seen[obj] then return seen[obj] end
 
-	-- New table; mark it as seen an copy recursively.
-	local s = seen or {}
-	local res = {}
-	s[obj] = res
-	for k, v in next, obj do res[M.deepcopy(k, s)] = M.deepcopy(v, s) end
-	return setmetatable(res, getmetatable(obj))
+    -- New table; mark it as seen an copy recursively.
+    local s = seen or {}
+    local res = {}
+    s[obj] = res
+    for k, v in next, obj do res[M.deepcopy(k, s)] = M.deepcopy(v, s) end
+    return setmetatable(res, getmetatable(obj))
 end
 
 function M.generate_linear_function(x1, y1, x2, y2)
@@ -116,6 +116,18 @@ function M.split(s, delimiter)
         i = i + 1
     end
     return t
+end
+
+-- split string on delimiter
+function M.splitFirst(s, delimiter)
+    delimiter = delimiter or '%s'
+    local startPos, endPos = string.find(s, delimiter, 1, true)
+    if not startPos then
+        return s, nil
+    end
+    local left = string.sub(s, 1, startPos - 1)
+    local right = string.sub(s, endPos + 1)
+    return left, right
 end
 
 function M.create_stats()
@@ -231,7 +243,7 @@ function M.center_coords(upperLeft, bottomRight, items, horizontal)
     icoords[dir] = (bottomRight[dir] - upperLeft[dir]) / 2 - spacer * 2
     for i = 1, items do
         local c = M.create_coord(upperLeft.x + icoords.x, upperLeft.y + icoords.y)
-        c[dir] = position + spacer * i + spacer/2
+        c[dir] = position + spacer * i + spacer / 2
         table.insert(positions, c)
     end
 

@@ -1,5 +1,4 @@
 local sm = require("state")
-local classes = require 'classes'
 local gameState = require("game")
 local menuState = require("menu")
 local helper = require('helper')
@@ -7,6 +6,7 @@ local push = require('push')
 local pauseState = require("pause")
 local endLevelState = require("victory")
 local configuration = require('configuration')
+local levelLib = require 'level'
 
 local function create_sound(path, mode, vol)
     if not vol then vol = 1 end
@@ -14,6 +14,10 @@ local function create_sound(path, mode, vol)
 end
 
 function love.load()
+    local map, _ = love.filesystem.read("levels/Tetoris/Tetoris.ssc")
+
+    levelLib:createMapExisting(map)
+
     if love.filesystem.getInfo('level-block', "file") then
         local data, _ = love.filesystem.read('level-block')
         LevelBlock, _ = tonumber(data)
@@ -63,7 +67,6 @@ function love.load()
     -- push is a library for scaling your game to any resolution
     push:setupScreen(ScreenAreaWidth, ScreenAreaHeight, RealWidth, RealHeight, { resizable = true })
     -- initialize states
-    classes:tilesInit()
     gameState:init(sm, menuState, pauseState, endLevelState)
     menuState:init(sm, gameState, configuration)
     pauseState:init(sm, gameState, menuState, configuration)

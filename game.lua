@@ -24,7 +24,7 @@ function game:update(dt)
 end
 
 function game:initMap(map)
-    local map, _ = love.filesystem.read(map)
+    local map, _ = love.filesystem.read("levels/Tetoris/Tetoris.ssc")
 
     self.level = levelLib:createMapExisting(map)
 
