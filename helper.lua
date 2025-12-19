@@ -16,6 +16,13 @@ function M.create_coord(x, y)
     return coord
 end
 
+function M.createImage(path, drawFunction)
+    local image = {
+        image = love.graphics.newImage(path),
+        drawFunction = drawFunction
+    }
+end
+
 function M.deepcopy(obj, seen)
     -- Handle non-tables and previously-seen tables.
     if type(obj) ~= 'table' then return obj end
@@ -229,21 +236,18 @@ function M.center_coords(upperLeft, bottomRight, items, horizontal)
     local dir = 'y'
     local nondir = 'x'
     if horizontal then
-        horizontal = false
         dir = 'x'
         nondir = 'y'
     end
     local space = bottomRight[dir] - upperLeft[dir]
-    local spacer = space / items
-    local occupation = spacer + spacer * items / 2
-    local position = space / 2 - occupation
+    local spacer = space / (items * 2 + 1)
     local positions = {}
     local icoords = {}
     icoords[nondir] = (bottomRight[nondir] - upperLeft[nondir]) / 2
-    icoords[dir] = (bottomRight[dir] - upperLeft[dir]) / 2 - spacer * 2
+    icoords[dir] = upperLeft[dir]
     for i = 1, items do
         local c = M.create_coord(upperLeft.x + icoords.x, upperLeft.y + icoords.y)
-        c[dir] = position + spacer * i + spacer / 2
+        c[dir] = icoords[dir] + spacer * i + spacer * (i - 1) + spacer / 2
         table.insert(positions, c)
     end
 

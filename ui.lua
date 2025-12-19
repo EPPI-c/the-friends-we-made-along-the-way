@@ -154,7 +154,7 @@ function ui.createButton(xp, yp, xs, ys, drawfunction, onclicked, position, clic
 
     ---executes the onclicked function
     function button:click()
-        Soundfx.click.sound:play()
+        -- Soundfx.click.sound:play()
         self.state = 'clicked'
         self.clicked_timer = self.click_time
         onclicked()
@@ -269,7 +269,7 @@ function ui.createSlider(xp, yp, xs, ys, drawfunction, onclicked, crease_time, p
 
     ---executes the onclicked function
     function slider:click()
-        Soundfx.click.sound:play()
+        -- Soundfx.click.sound:play()
         self.state = 'clicked'
         self.clicked_timer = self.click_time
         self.active = not self.active
@@ -327,7 +327,7 @@ function ui.createKeyBoardNavigation(items)
     function KeyboardNavigator:update(dt)
         if self.selected ~= Previous_selected then
             Previous_selected = self.selected
-            Soundfx.select.sound:play()
+            -- Soundfx.select.sound:play()
         end
         for k, button in pairs(self.items) do
             button:update(dt)

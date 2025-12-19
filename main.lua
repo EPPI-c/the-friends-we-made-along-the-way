@@ -30,38 +30,38 @@ function love.load()
     love.keyboard.setKeyRepeat(true)
     HsFile = "highscore.txt"
     Stats = helper.loadHighScore(HsFile)
-    FontFile = 'Alkhemikal.ttf'
-    Font = love.graphics.newFont(FontFile, 20)
-    FontBig = love.graphics.newFont(FontFile, 40)
-    Font:setFilter("nearest", "nearest")
-    FontBig:setFilter("nearest", "nearest")
-    love.graphics.setFont(Font)
+    -- FontFile = 'Alkhemikal.ttf'
+    -- Font = love.graphics.newFont(FontFile, 20)
+    -- FontBig = love.graphics.newFont(FontFile, 40)
+    -- Font:setFilter("nearest", "nearest")
+    -- FontBig:setFilter("nearest", "nearest")
+    -- love.graphics.setFont(Font)
     Volumes = {
         generalVolume = 1,
         soundfxVolume = 1,
         musicVolume = 1,
     }
     Soundfx = {
-        bark = create_sound('sound-fx/bark.mp3', 'static', 0.4),
-        keyPickUp = create_sound('sound-fx/key-get-39925.mp3', 'static', 0.6),
-        eat = create_sound('sound-fx/eat-323883.mp3', 'static', 0.4),
-        growl = create_sound('sound-fx/dogs-growling-3-309525.mp3', 'static', 0.6),
-        step = create_sound('sound-fx/footstep.mp3', 'static', 2),
-        point = create_sound('sound-fx/pickupCoin.wav.mp3', 'static', 0.8),
-        door = create_sound('sound-fx/dooropening.mp3', 'static', 0.7),
-        select = create_sound('sound-fx/blipSelect.wav.mp3', "static", 0.5),
-        click = create_sound('sound-fx/click.wav.mp3', "static"),
-        thunder = create_sound('sound-fx/thunder-for-anime-161022.mp3', 'static'),
-        startlevel = create_sound('sound-fx/start-level.mp3', 'static'),
+        -- bark = create_sound('sound-fx/bark.mp3', 'static', 0.4),
+        -- keyPickUp = create_sound('sound-fx/key-get-39925.mp3', 'static', 0.6),
+        -- eat = create_sound('sound-fx/eat-323883.mp3', 'static', 0.4),
+        -- growl = create_sound('sound-fx/dogs-growling-3-309525.mp3', 'static', 0.6),
+        -- step = create_sound('sound-fx/footstep.mp3', 'static', 2),
+        -- point = create_sound('sound-fx/pickupCoin.wav.mp3', 'static', 0.8),
+        -- door = create_sound('sound-fx/dooropening.mp3', 'static', 0.7),
+        -- select = create_sound('sound-fx/blipSelect.wav.mp3', "static", 0.5),
+        -- click = create_sound('sound-fx/click.wav.mp3', "static"),
+        -- thunder = create_sound('sound-fx/thunder-for-anime-161022.mp3', 'static'),
+        -- startlevel = create_sound('sound-fx/start-level.mp3', 'static'),
     }
     Music = {
-        music = create_sound('sound-fx/alkan-etude-a-minor-woo.mp3', "stream", 0.5),
-        reverbmusic = create_sound('sound-fx/alkan-etude-a-minor-woo-reverb.mp3', "stream", 0.5),
+        -- music = create_sound('sound-fx/alkan-etude-a-minor-woo.mp3', "stream", 0.5),
+        -- reverbmusic = create_sound('sound-fx/alkan-etude-a-minor-woo-reverb.mp3', "stream", 0.5),
     }
     ChangeVolume()
 
-    ScreenAreaWidth = 640
-    ScreenAreaHeight = 360
+    ScreenAreaWidth = 1280
+    ScreenAreaHeight = 720
     RealWidth = love.graphics.getWidth()
     RealHeight = love.graphics.getHeight()
     -- push is a library for scaling your game to any resolution
@@ -72,7 +72,7 @@ function love.load()
     pauseState:init(sm, gameState, menuState, configuration)
     endLevelState:init(sm, gameState, menuState)
     configuration:init(sm)
-    sm:changestate(menuState, nil)
+    sm:changestate(gameState, nil)
 end
 
 function ChangeVolume()

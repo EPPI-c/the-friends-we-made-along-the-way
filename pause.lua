@@ -75,11 +75,11 @@ function M:update(dt)
 end
 
 function M:changedstate()
-    MusicPos = Music.music.sound:tell()
-    Music.music.sound:stop()
-    Music.reverbmusic.sound:seek(MusicPos)
-    Music.reverbmusic.sound:setLooping(true)
-    Music.reverbmusic.sound:play()
+    -- MusicPos = Music.music.sound:tell()
+    -- Music.music.sound:stop()
+    -- Music.reverbmusic.sound:seek(MusicPos)
+    -- Music.reverbmusic.sound:setLooping(true)
+    -- Music.reverbmusic.sound:play()
     self.buttonState = self.menuState
     self.menubutton.text = 'menu'
     self.menubutton.clicked = function()

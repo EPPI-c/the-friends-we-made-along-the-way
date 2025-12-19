@@ -106,20 +106,20 @@ function M:init(sm, Game_state, configurationState)
     self.Game_state = Game_state
     self.configurationState = configurationState
     self.index = 1
-    self.background = love.graphics.newImage('images/background.png')
-    self.house = love.graphics.newImage('images/house.png')
-    self.houseCustom = love.graphics.newImage('images/houseCustom.png')
-    self.housew, self.househ = self.house:getDimensions()
-    self.mat = love.graphics.newImage('images/mat.png')
-    self.moon = love.graphics.newImage('images/moon.png')
-    self.vampireFront = love.graphics.newImage('images/vampireFront.png')
+    -- self.background = love.graphics.newImage('images/background.png')
+    -- self.house = love.graphics.newImage('images/house.png')
+    -- self.houseCustom = love.graphics.newImage('images/houseCustom.png')
+    -- self.housew, self.househ = self.house:getDimensions()
+    -- self.mat = love.graphics.newImage('images/mat.png')
+    -- self.moon = love.graphics.newImage('images/moon.png')
+    -- self.vampireFront = love.graphics.newImage('images/vampireFront.png')
     self.dialog = ui.createDialog(200, ScreenAreaHeight - 110, ScreenAreaWidth - 400, 70)
     self.startlevel = false
     self.starttimer = 0
-    local arrow = love.graphics.newImage('images/arrow.png')
-    local arrowLeft = love.graphics.newImage('images/arrowleft.png')
-    self.arrow = createButtonImage(ScreenAreaWidth - 33, ScreenAreaHeight / 2 - 13, arrow, right)
-    self.arrowLeft = createButtonImage(20, ScreenAreaHeight / 2 - 13, arrowLeft, left)
+    -- local arrow = love.graphics.newImage('images/arrow.png')
+    -- local arrowLeft = love.graphics.newImage('images/arrowleft.png')
+    -- self.arrow = createButtonImage(ScreenAreaWidth - 33, ScreenAreaHeight / 2 - 13, arrow, right)
+    -- self.arrowLeft = createButtonImage(20, ScreenAreaHeight / 2 - 13, arrowLeft, left)
     self.startfadein = helper.generate_linear_function(1, 0, 5, 1)
     self.copyButton = {
         text = 'COPY',
@@ -180,39 +180,39 @@ end
 ---for drawing stuff
 function M:draw()
     love.graphics.setColor(1, 1, 1)
-    love.graphics.draw(self.background, 0, 0)
-    love.graphics.draw(self.moon, 15, 10)
-
-    love.graphics.push()
-    love.graphics.translate((ScreenAreaWidth - self.housew) / 2, 5)
-    if self.index > self.normal then
-        love.graphics.draw(self.houseCustom)
-    else
-        love.graphics.draw(self.house)
-    end
-    if self.index <= LevelBlock or LevelBlock >= self.normal then
-        love.graphics.draw(self.mat, 173, 187)
-    end
-    local font = love.graphics.getFont()
-    local h = font:getHeight()
-    love.graphics.setColor(0, 0, 0)
-    if self.index > self.custom then
-        love.graphics.printf('+', 304, 161 - h, 32, 'center')
-    else
-        love.graphics.printf(self.index, 304, 161 - h, 32, 'center')
-    end
-    love.graphics.pop()
-
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.draw(self.vampireFront, 180, 180)
-    self.menu:draw()
-    self.dialog:draw()
-    if self.startlevel then
-        love.graphics.setColor(0, 0, 0, self.startfadein(self.starttimer))
-        love.graphics.rectangle('fill', 0, 0, ScreenAreaWidth, ScreenAreaHeight)
-    end
-    self.arrow:draw()
-    self.arrowLeft:draw()
+    -- love.graphics.draw(self.background, 0, 0)
+    -- love.graphics.draw(self.moon, 15, 10)
+    --
+    -- love.graphics.push()
+    -- love.graphics.translate((ScreenAreaWidth - self.housew) / 2, 5)
+    -- if self.index > self.normal then
+    --     love.graphics.draw(self.houseCustom)
+    -- else
+    --     love.graphics.draw(self.house)
+    -- end
+    -- if self.index <= LevelBlock or LevelBlock >= self.normal then
+    --     love.graphics.draw(self.mat, 173, 187)
+    -- end
+    -- local font = love.graphics.getFont()
+    -- local h = font:getHeight()
+    -- love.graphics.setColor(0, 0, 0)
+    -- if self.index > self.custom then
+    --     love.graphics.printf('+', 304, 161 - h, 32, 'center')
+    -- else
+    --     love.graphics.printf(self.index, 304, 161 - h, 32, 'center')
+    -- end
+    -- love.graphics.pop()
+    --
+    -- love.graphics.setColor(1, 1, 1)
+    -- love.graphics.draw(self.vampireFront, 180, 180)
+    -- self.menu:draw()
+    -- self.dialog:draw()
+    -- if self.startlevel then
+    --     love.graphics.setColor(0, 0, 0, self.startfadein(self.starttimer))
+    --     love.graphics.rectangle('fill', 0, 0, ScreenAreaWidth, ScreenAreaHeight)
+    -- end
+    -- self.arrow:draw()
+    -- self.arrowLeft:draw()
 end
 
 ---@param dt number seconds since the last time the function was called
@@ -252,8 +252,8 @@ end
 function M:changedstate()
     self.startlevel = false
     self.starttimer = 0
-    Music.reverbmusic.sound:stop()
-    Music.music.sound:stop()
+    -- Music.reverbmusic.sound:stop()
+    -- Music.music.sound:stop()
     self:readLevels()
 end
 
