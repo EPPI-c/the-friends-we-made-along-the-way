@@ -18,14 +18,14 @@ function M:init(stateMachine, gameState, menuState, configuration)
         {
             text = 'continue',
             clicked = function()
-                self.sm:changestate(self.gameState)
+                self.sm:changestate(self.gameState, {from='pause'})
             end
         },
 
         {
             text = 'reset',
             clicked = function()
-                self.sm:changestate(self.gameState)
+                self.sm:changestate(self.gameState {from='pause'})
             end
         },
 

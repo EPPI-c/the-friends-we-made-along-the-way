@@ -14,9 +14,8 @@ local function create_sound(path, mode, vol)
 end
 
 function love.load()
-    local map, _ = love.filesystem.read("levels/Tetoris/Tetoris.ssc")
-
-    levelLib:createMapExisting(map)
+    ScreenAreaWidth = 1280
+    ScreenAreaHeight = 720
 
     if love.filesystem.getInfo('level-block', "file") then
         local data, _ = love.filesystem.read('level-block')
@@ -60,8 +59,6 @@ function love.load()
     }
     ChangeVolume()
 
-    ScreenAreaWidth = 1280
-    ScreenAreaHeight = 720
     RealWidth = love.graphics.getWidth()
     RealHeight = love.graphics.getHeight()
     -- push is a library for scaling your game to any resolution
@@ -72,7 +69,7 @@ function love.load()
     pauseState:init(sm, gameState, menuState, configuration)
     endLevelState:init(sm, gameState, menuState)
     configuration:init(sm)
-    sm:changestate(gameState, nil)
+    sm:changestate(gameState, {from='menu'})
 end
 
 function ChangeVolume()

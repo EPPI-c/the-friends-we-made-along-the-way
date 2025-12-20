@@ -6,36 +6,15 @@ local game = {}
 
 function game:init(sm, menu, pause, endLevelState)
     self.sm = sm
-    self.sizeOfNotes = 40
     self.menuState = menu
     self.pauseState = pause
     self.endLevelState = endLevelState
     self.levelName = ''
     self.levelIndex = 1
-    self.measure = nil
-    self.measures = {}
-    for i = 1, 12, 1 do
-        self.measures[i] = {'0','0','0','0'}
-    end
-    self.beat = 0     -- measured in beats
-    self.lastbeat = 0 -- measured in seconds
-    self.songPosition = 0
     self.playAreaX = ScreenAreaWidth / 4
-    self.laneCoords = helper.center_coords(helper.create_coord(self.playAreaX, 0), helper.create_coord(3 * self.playAreaX, 0), 4, true)
-    local noteSize = ScreenAreaHeight / 13
-end
-
-function game:createLine(line, lastbeat)
-    line = {
-        one = string.sub(line, 1, 1),
-        two = string.sub(line, 2, 2),
-        three = string.sub(line, 3, 3),
-        four = string.sub(line, 4, 4),
-        lastbeat = lastbeat,
-    }
-    function line:draw()
-        local y = (ScreenAreaHeight - game.sizeOfNotes) - (self.crochet * (lastbeat - game.lastbeat))
-    end
+    self.laneCoords = helper.center_coords(helper.create_coord(self.playAreaX, 0),
+        helper.create_coord(3 * self.playAreaX, 0), 4, true)
+    self.noteSize = ScreenAreaHeight / 13
 end
 
 function game:mousepressed(x, y, button, istouch, presses)
@@ -50,18 +29,25 @@ function game:draw()
     love.graphics.setColor(0, 0.3, 0)
     love.graphics.rectangle('fill', self.playAreaX, 0, playAreaWidth, ScreenAreaHeight)
 
-    print(self.playAreaX)
-
     love.graphics.setColor(0, 0.3, 0.4)
     local width = playAreaWidth / 8
-    for k, v in pairs(self.laneCoords) do
+    for _, v in pairs(self.laneCoords) do
         love.graphics.rectangle('fill', v.x - width / 2, v.y, width, ScreenAreaHeight)
     end
 
-    love.graphics.setColor(1, 1, 1)
-    local size = ScreenAreaHeight / 13
-    love.graphics.rectangle('fill', 20, 00, size, size)
-    love.graphics.rectangle('fill', 20, 720-size, size, size)
+    local blue = 1
+    for _, measure in pairs(self.level.measures) do
+        for _, line in pairs(measure) do
+            if blue == 1 then
+                blue = 0
+            else
+                blue = 1
+            end
+            if line.lastbeat + self.crochet >= self.songPosition then
+                line:draw(self.noteSize, self.songPosition, self.laneCoords, blue)
+            end
+        end
+    end
 end
 
 function game:update(dt)
@@ -69,21 +55,22 @@ function game:update(dt)
     if self.songPosition > self.lastbeat + self.crochet then
         self.lastbeat = self.lastbeat + self.crochet
         self.beat = self.beat + 1
-        local measure = self.level.measures[self.beat]
-        if measure then
-            table.insert(self.measures, measure)
-        end
     end
-    self.bpms = self.level:getBPMS(self.beat)
-    self.crochet = 60 / self.bpms
+    if self.lastbeat > self.level.finalbeat then
+        os.exit()
+    end
 end
 
 function game:initMap(map)
     local map, _ = love.filesystem.read(map)
 
     self.level = levelLib:createMapExisting(map)
-    self.bpms = self.level:getBPMS(self.beat)
-    self.crochet = 60 / self.bpms
+
+    self.bpm = levelLib:getBPMS(0, self.level.bpmsTable)
+    self.crochet = 60 / self.bpm
+    self.beat = 0     -- measured in beats
+    self.lastbeat = 0 -- measured in seconds
+    self.songPosition = 0
 
     self.levelInitial = helper.deepcopy(self.level)
 end
@@ -93,8 +80,9 @@ function game:reset()
 end
 
 function game:changedstate(context)
-    self:initMap("levels/Tetoris/Tetoris.ssc")
-    -- if context.from == 'menu' then
+    if context.from == 'menu' then
+        self:initMap("levels/Tetoris/Tetoris.ssc")
+    end
     --     self.levelName = context.levelName
     --     self.levelIndex = context.levelIndex
     --     self:initMap(self.levelName)

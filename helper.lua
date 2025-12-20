@@ -23,6 +23,16 @@ function M.createImage(path, drawFunction)
     }
 end
 
+function M.remove_empty_lines(str)
+  local lines = {}
+  for line in str:gmatch("([^\r\n]*)\r?\n?") do
+    if line:match("%S") then -- line contains at least one non-whitespace character
+      table.insert(lines, line)
+    end
+  end
+  return table.concat(lines, "\n")
+end
+
 function M.deepcopy(obj, seen)
     -- Handle non-tables and previously-seen tables.
     if type(obj) ~= 'table' then return obj end
