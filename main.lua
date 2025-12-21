@@ -1,4 +1,5 @@
 local sm = require("state")
+Events = require("events")
 local gameState = require("game")
 local menuState = require("menu")
 local helper = require('helper')

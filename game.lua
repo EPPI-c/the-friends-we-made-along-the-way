@@ -24,25 +24,24 @@ function game:resize()
     PlayAreaHitbox = helper.create_hitbox(upperLeft, lowerRight)
     self.laneCoords = helper.center_coords(upperLeft, lowerRight, 4, true)
     self.noteSize = PlayArea / 13
-    
 end
 
 function game:mousepressed(x, y, button, istouch, presses)
 end
 
 function game:draw()
-    love.graphics.setColor(0, .2, 0)
-    love.graphics.rectangle('fill', PlayAreaHitbox.topLeft.x, PlayAreaHitbox.topLeft.y, PlayArea, PlayArea)
-
+    -- play area
     love.graphics.setColor(0, 0.3, 0)
     love.graphics.rectangle('fill', PlayAreaHitbox.topLeft.x, PlayAreaHitbox.topLeft.y, PlayArea, PlayArea)
 
+    -- lanes
     love.graphics.setColor(0, 0.3, 0.4)
     local width = PlayArea / 8
     for _, v in pairs(self.laneCoords) do
         love.graphics.rectangle('fill', v.x - width / 2, PlayAreaHitbox.topLeft.y, width, PlayArea)
     end
 
+    -- notes
     local blue = 1
     for _, measure in pairs(self.level.measures) do
         for _, line in pairs(measure) do
@@ -63,6 +62,7 @@ function game:update(dt)
     if self.songPosition > self.lastbeat + self.crochet then
         self.lastbeat = self.lastbeat + self.crochet
         self.beat = self.beat + 1
+        Events.emit("beat", self.beat, self.lastbeat)
     end
     if self.lastbeat > self.level.finalbeat then
         os.exit()
@@ -125,6 +125,13 @@ end
 ---@param key string Character of the released key.
 ---@param scancode string The scancode representing the released key.
 function game:keypressed(key, scancode, isrepeat)
+    if not isrepeat and
+        (key == "left"
+        or key == "right"
+        or key == "up"
+        or key == "down") then
+        Events.emit(key, self.songPosition)
+    end
 end
 
 return game
