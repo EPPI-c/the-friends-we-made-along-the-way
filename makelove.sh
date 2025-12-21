@@ -4,22 +4,17 @@
 zip -9 -r SOUS-DISC-GAMEJAM-WINTER.love \
 conf.lua \
 configuration.lua \
-level-editor.lua \
-cutscene.lua \
-death.lua \
+level.lua \
 game.lua \
 helper.lua \
 images/ \
 main.lua \
 menu.lua \
 pause.lua \
-classes.lua \
-level.lua \
 push.lua \
 ui.lua \
 state.lua \
 victory.lua \
-Alkhemikal.ttf \
 levels/ \
 sound-fx/
 

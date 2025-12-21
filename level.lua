@@ -59,7 +59,7 @@ function M:parseNotes(measureString, bpmsTable, nextbeat)
         line.crochet = 60 / M:getBPMS(nextbeat, bpmsTable)
         nextbeat = nextbeat + line.crochet * beatPerLine -- might delay because of approximation?
         function line:draw(noteSize, songPosition, coords, blue)
-            local y = (ScreenAreaHeight - noteSize) - (noteSize * (self.lastbeat - songPosition) / self.crochet)
+            local y = (PlayAreaHitbox.bottomRight.y - noteSize) - (noteSize * (self.lastbeat - songPosition) / self.crochet)
             love.graphics.setColor(1, blue, blue)
             local halfNote = noteSize / 2
             for i, lane in pairs(self.lanes) do

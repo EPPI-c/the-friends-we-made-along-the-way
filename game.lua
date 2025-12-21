@@ -11,10 +11,20 @@ function game:init(sm, menu, pause, endLevelState)
     self.endLevelState = endLevelState
     self.levelName = ''
     self.levelIndex = 1
-    self.playAreaX = ScreenAreaWidth / 4
-    self.laneCoords = helper.center_coords(helper.create_coord(self.playAreaX, 0),
-        helper.create_coord(3 * self.playAreaX, 0), 4, true)
-    self.noteSize = ScreenAreaHeight / 13
+    self:resize()
+end
+
+function game:resize()
+    local x = (RealWidth - PlayArea) / 2
+    local y = (RealHeight - PlayArea) / 2
+    local xe = x + PlayArea
+    local ye = y + PlayArea
+    local upperLeft = helper.create_coord(x, y)
+    local lowerRight = helper.create_coord(xe, ye)
+    PlayAreaHitbox = helper.create_hitbox(upperLeft, lowerRight)
+    self.laneCoords = helper.center_coords(upperLeft, lowerRight, 4, true)
+    self.noteSize = PlayArea / 13
+    
 end
 
 function game:mousepressed(x, y, button, istouch, presses)
@@ -22,17 +32,15 @@ end
 
 function game:draw()
     love.graphics.setColor(0, .2, 0)
-    love.graphics.rectangle('fill', ScreenAreaWidth / 4, 0, 2 * ScreenAreaWidth / 4, ScreenAreaHeight)
-
-    local playAreaWidth = 2 * ScreenAreaWidth / 4
+    love.graphics.rectangle('fill', PlayAreaHitbox.topLeft.x, PlayAreaHitbox.topLeft.y, PlayArea, PlayArea)
 
     love.graphics.setColor(0, 0.3, 0)
-    love.graphics.rectangle('fill', self.playAreaX, 0, playAreaWidth, ScreenAreaHeight)
+    love.graphics.rectangle('fill', PlayAreaHitbox.topLeft.x, PlayAreaHitbox.topLeft.y, PlayArea, PlayArea)
 
     love.graphics.setColor(0, 0.3, 0.4)
-    local width = playAreaWidth / 8
+    local width = PlayArea / 8
     for _, v in pairs(self.laneCoords) do
-        love.graphics.rectangle('fill', v.x - width / 2, v.y, width, ScreenAreaHeight)
+        love.graphics.rectangle('fill', v.x - width / 2, PlayAreaHitbox.topLeft.y, width, PlayArea)
     end
 
     local blue = 1
@@ -43,7 +51,7 @@ function game:draw()
             else
                 blue = 1
             end
-            if line.lastbeat + self.crochet >= self.songPosition then
+            if line.lastbeat + self.crochet >= self.songPosition and line.lastbeat <= self.songPosition + PlayArea / self.noteSize * self.crochet then
                 line:draw(self.noteSize, self.songPosition, self.laneCoords, blue)
             end
         end

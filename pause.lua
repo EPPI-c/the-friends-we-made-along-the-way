@@ -41,7 +41,7 @@ function M:init(stateMachine, gameState, menuState, configuration)
 
     local positions = helper.center_coords(
         helper.create_coord(0, 0),
-        helper.create_coord(ScreenAreaWidth, ScreenAreaHeight),
+        helper.create_coord(RealWidth, RealHeight),
         #options,
         false
     )
@@ -90,7 +90,7 @@ end
 function M:draw()
     self.gameState:draw()
     love.graphics.setColor(0, 0, 0, 0.5)
-    love.graphics.rectangle("fill", 0, 0, ScreenAreaWidth, ScreenAreaHeight)
+    love.graphics.rectangle("fill", 0, 0, RealWidth, RealHeight)
     self.menu:draw()
 end
 

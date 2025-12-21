@@ -61,7 +61,7 @@ function M:createMenu()
 
     local coords = helper.center_coords(
         helper.create_coord(0, 0),
-        helper.create_coord(200, ScreenAreaHeight),
+        helper.create_coord(200, RealHeight),
         4,
         false
     )
@@ -113,7 +113,7 @@ function M:init(sm, Game_state, configurationState)
     -- self.mat = love.graphics.newImage('images/mat.png')
     -- self.moon = love.graphics.newImage('images/moon.png')
     -- self.vampireFront = love.graphics.newImage('images/vampireFront.png')
-    self.dialog = ui.createDialog(200, ScreenAreaHeight - 110, ScreenAreaWidth - 400, 70)
+    self.dialog = ui.createDialog(200, RealHeight - 110, RealWidth - 400, 70)
     self.startlevel = false
     self.starttimer = 0
     -- local arrow = love.graphics.newImage('images/arrow.png')

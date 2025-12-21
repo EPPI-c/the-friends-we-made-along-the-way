@@ -2,7 +2,6 @@ local sm = require("state")
 local gameState = require("game")
 local menuState = require("menu")
 local helper = require('helper')
-local push = require('push')
 local pauseState = require("pause")
 local endLevelState = require("victory")
 local configuration = require('configuration')
@@ -14,8 +13,11 @@ local function create_sound(path, mode, vol)
 end
 
 function love.load()
-    ScreenAreaWidth = 1280
-    ScreenAreaHeight = 720
+    RealWidth = love.graphics.getWidth()
+    RealHeight = love.graphics.getHeight()
+    ScreenAreaWidth = RealWidth
+    ScreenAreaHeight = RealHeight
+    PlayArea = math.min(RealWidth, RealHeight)
 
     if love.filesystem.getInfo('level-block', "file") then
         local data, _ = love.filesystem.read('level-block')
@@ -59,10 +61,6 @@ function love.load()
     }
     ChangeVolume()
 
-    RealWidth = love.graphics.getWidth()
-    RealHeight = love.graphics.getHeight()
-    -- push is a library for scaling your game to any resolution
-    push:setupScreen(ScreenAreaWidth, ScreenAreaHeight, RealWidth, RealHeight, { resizable = true })
     -- initialize states
     gameState:init(sm, menuState, pauseState, endLevelState)
     menuState:init(sm, gameState, configuration)
@@ -103,32 +101,27 @@ function love.keyreleased(key, scancode, isrepeat)
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
-    x, y = push:toGame(x, y)
     if sm.state.mousepressed then
         sm.state:mousepressed(x, y, button, istouch, presses)
     end
 end
 
 function love.mousereleased(x, y, button, istouch, presses)
-    x, y = push:toGame(x, y)
     if sm.state.mousereleased then
         sm.state:mousereleased(x, y, button, istouch, presses)
     end
 end
 
 function love.mousemoved(x, y, dx, dy, istouch)
-    x, y = push:toGame(x, y)
     if sm.state.mousemoved then
         sm.state:mousemoved(x, y, dx, dy, istouch)
     end
 end
 
 function love.draw()
-    push:start()
     if sm.state.draw then
         sm.state:draw()
     end
-    push:finish()
 end
 
 function love.focus(f)
@@ -140,7 +133,7 @@ end
 function love.resize(w, he)
     RealWidth = w
     RealHeight = he
-    push:resize(w, he)
+    PlayArea = math.min(RealWidth, RealHeight)
     if sm.state.resize then
         sm.state:resize()
     end
