@@ -1,6 +1,7 @@
 local helper = require 'helper'
 local ui = require 'ui'
 local levelLib = require 'level'
+local composer = require 'composer'
 
 local game = {}
 
@@ -64,6 +65,8 @@ function game:update(dt)
         self.beat = self.beat + 1
         Events.emit("beat", self.beat, self.lastbeat)
     end
+    composer:updateMeasures(self.songPosition)
+
     if self.lastbeat > self.level.finalbeat then
         os.exit()
     end
@@ -73,6 +76,7 @@ function game:initMap(map)
     local map, _ = love.filesystem.read(map)
 
     self.level = levelLib:createMapExisting(map)
+    composer:init(self.level)
 
     self.bpm = levelLib:getBPMS(0, self.level.bpmsTable)
     self.crochet = 60 / self.bpm
