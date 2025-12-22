@@ -16,6 +16,7 @@ function M:updateMeasures(songPosition)
     if math.abs(songPosition - oneth.lastbeat)
         >
         math.abs(songPosition - second.lastbeat) then
+        Events.emit("removeLine", self.lines[1])
         table.remove(self.lines, 1)
     end
 end

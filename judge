@@ -1,0 +1,12 @@
+local M = {}
+
+function M:init(composer, perfect, good, ok)
+    self.composer = composer
+    self.perfect = perfect
+    self.good = good
+    self.ok = ok
+end
+
+function M.check()
+    self.composer.lines[1].lanes
+end
