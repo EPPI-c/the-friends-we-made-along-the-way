@@ -27,6 +27,7 @@ function M.resetHits(line)
 end
 
 function M:check(lane, line, playerbeat)
+    if not line then print('nil') end
     -- no note
     if line.lanes[lane] ~= '1' or self.hits[lane] then
         table.insert(self.history, "miss")
@@ -41,6 +42,7 @@ function M:check(lane, line, playerbeat)
         if offset <= v[2] then
             self.hits[lane] = true
             table.insert(self.history, v[1])
+            line.drawlanes[lane] = false
             Events.emit(v[1])
             return
         end
@@ -53,20 +55,22 @@ end
 
 function M.checkLeft(playerbeat)
     -- left
-    M:check(1, M.composer.lines, playerbeat)
+    M:check(1, M.composer.lines[1], playerbeat)
 end
 
 function M.checkDown(playerbeat)
     -- down
-    M:check(2, M.composer.lines, playerbeat)
+    M:check(2, M.composer.lines[1], playerbeat)
 end
 
 function M.checkUp(playerbeat)
     -- up
-    M:check(3, M.composer.lines, playerbeat)
+    M:check(3, M.composer.lines[1], playerbeat)
 end
 
 function M.checkRight(playerbeat)
     -- right
-    M:check(4, M.composer.lines, playerbeat)
+    M:check(4, M.composer.lines[1], playerbeat)
 end
+
+return M

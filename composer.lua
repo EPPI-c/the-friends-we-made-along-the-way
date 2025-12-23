@@ -2,8 +2,8 @@ local M = {}
 
 function M:init(level)
     self.lines = {}
-    for _, measure in pairs(level.measures) do
-        for _, line in pairs(measure) do
+    for _, measure in ipairs(level.measures) do
+        for _, line in ipairs(measure) do
             table.insert(self.lines, line)
         end
     end

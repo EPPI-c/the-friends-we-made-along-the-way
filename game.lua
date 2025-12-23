@@ -2,6 +2,7 @@ local helper = require 'helper'
 local ui = require 'ui'
 local levelLib = require 'level'
 local composer = require 'composer'
+local judge = require 'judge'
 
 local game = {}
 
@@ -12,6 +13,7 @@ function game:init(sm, menu, pause, endLevelState)
     self.endLevelState = endLevelState
     self.levelName = ''
     self.levelIndex = 1
+    self.effect:init()
     self:resize()
 end
 
@@ -30,7 +32,57 @@ end
 function game:mousepressed(x, y, button, istouch, presses)
 end
 
+game.effect = {
+    colour = { 0, 0, 0, 0 },
+    timer = 0,
+    timerAmount = 0.6,
+}
+
+function game.effect:init()
+    self.fadeout = helper.generate_linear_function(1, self.timerAmount, 0, 0)
+    Events.on("perfect", self.perfect)
+    Events.on("good", self.good)
+    Events.on("ok", self.ok)
+    Events.on("miss", self.miss)
+end
+
+function game.effect:update(dt)
+    if self.timer <= 0 then
+        self.timer = 0
+        return
+    end
+    self.timer = self.timer - dt
+end
+
+function game.effect.perfect()
+    game.effect.colour = { 1, 1, 1, 1 }
+    game.effect.timer = game.effect.timerAmount
+end
+
+function game.effect.good()
+    game.effect.colour = { 0, 1, 0, 1 }
+    game.effect.timer = game.effect.timerAmount
+end
+
+function game.effect.ok()
+    game.effect.colour = { 0, 0, 1, 1 }
+    game.effect.timer = game.effect.timerAmount
+end
+
+function game.effect.miss()
+    game.effect.colour = { 1, 0, 0, 1 }
+    game.effect.timer = game.effect.timerAmount
+end
+
+function game.effect:draw()
+    self.colour[4] = self.fadeout(self.timer)
+    love.graphics.setColor(self.colour)
+    love.graphics.rectangle('fill', 0, 0, RealWidth, RealHeight)
+end
+
 function game:draw()
+    self.effect:draw()
+
     -- play area
     love.graphics.setColor(0, 0.3, 0)
     love.graphics.rectangle('fill', PlayAreaHitbox.topLeft.x, PlayAreaHitbox.topLeft.y, PlayArea, PlayArea)
@@ -43,17 +95,11 @@ function game:draw()
     end
 
     -- notes
-    local blue = 1
-    for _, measure in pairs(self.level.measures) do
-        for _, line in pairs(measure) do
-            if blue == 1 then
-                blue = 0
-            else
-                blue = 1
-            end
-            if line.lastbeat + self.crochet >= self.songPosition and line.lastbeat <= self.songPosition + PlayArea / self.noteSize * self.crochet then
-                line:draw(self.noteSize, self.songPosition, self.laneCoords, blue)
-            end
+    for _, line in ipairs(composer.lines) do
+        if line.lastbeat + self.crochet >= self.songPosition
+            and
+            line.lastbeat <= self.songPosition + PlayArea / self.noteSize * self.crochet then
+            line:draw(self.noteSize, self.songPosition, self.laneCoords)
         end
     end
 end
@@ -70,6 +116,8 @@ function game:update(dt)
     if self.lastbeat > self.level.finalbeat then
         os.exit()
     end
+
+    self.effect:update(dt)
 end
 
 function game:initMap(map)
@@ -77,6 +125,7 @@ function game:initMap(map)
 
     self.level = levelLib:createMapExisting(map)
     composer:init(self.level)
+    judge:init(composer, 0.05, 0.06, 0.10)
 
     self.bpm = levelLib:getBPMS(0, self.level.bpmsTable)
     self.crochet = 60 / self.bpm
@@ -131,9 +180,9 @@ end
 function game:keypressed(key, scancode, isrepeat)
     if not isrepeat and
         (key == "left"
-        or key == "right"
-        or key == "up"
-        or key == "down") then
+            or key == "right"
+            or key == "up"
+            or key == "down") then
         Events.emit(key, self.songPosition)
     end
 end

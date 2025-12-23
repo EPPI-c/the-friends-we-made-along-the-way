@@ -46,6 +46,7 @@ function M:parseNotes(measureString, bpmsTable, nextbeat)
                 string.sub(left, 3, 3),
                 string.sub(left, 4, 4),
             },
+            drawlanes = { true, true, true, true },
             lastbeat = nextbeat,
         }
 
@@ -58,12 +59,13 @@ function M:parseNotes(measureString, bpmsTable, nextbeat)
         line.lastbeat = nextbeat
         line.crochet = 60 / M:getBPMS(nextbeat, bpmsTable)
         nextbeat = nextbeat + line.crochet * beatPerLine -- might delay because of approximation?
-        function line:draw(noteSize, songPosition, coords, blue)
-            local y = (PlayAreaHitbox.bottomRight.y - noteSize) - (noteSize * (self.lastbeat - songPosition) / self.crochet)
-            love.graphics.setColor(1, blue, blue)
+        function line:draw(noteSize, songPosition, coords)
+            local y = (PlayAreaHitbox.bottomRight.y - noteSize) -
+                (noteSize * (self.lastbeat - songPosition) / self.crochet)
+            love.graphics.setColor(1, 1, 1)
             local halfNote = noteSize / 2
             for i, lane in pairs(self.lanes) do
-                if lane == '1' then
+                if lane == '1' and self.drawlanes[i] then
                     love.graphics.rectangle('fill', coords[i].x - halfNote, y, noteSize, noteSize)
                 end
             end
@@ -99,13 +101,11 @@ function M:createMapExisting(map)
 
     local rest = level.meta["NOTES"]
     local measure
-    local beat = 0
     local nextbeat = 0
     repeat
         measure, rest = self:parseMeasure(rest)
         measure, nextbeat = self:parseNotes(measure, level.bpmsTable, nextbeat)
-        level.measures[beat] = measure
-        beat = beat + 4 -- hardcoded 4/4 signature
+        table.insert(level.measures, measure)
     until rest == nil
     level.finalbeat = nextbeat
     return level
