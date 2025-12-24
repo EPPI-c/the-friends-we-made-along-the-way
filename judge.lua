@@ -9,11 +9,6 @@ function M:init(composer, perfect, good, ok)
         { "good",    good },
         { "ok",      ok },
     }
-    Events.on("removeLine", self.resetHits)
-    Events.on("left", self.checkLeft)
-    Events.on("down", self.checkDown)
-    Events.on("up", self.checkUp)
-    Events.on("right", self.checkRight)
 end
 
 function M.resetHits(line)
@@ -72,5 +67,11 @@ function M.checkRight(playerbeat)
     -- right
     M:check(4, M.composer.lines[1], playerbeat)
 end
+
+Events.on("removeLine", M.resetHits)
+Events.on("left", M.checkLeft)
+Events.on("down", M.checkDown)
+Events.on("up", M.checkUp)
+Events.on("right", M.checkRight)
 
 return M

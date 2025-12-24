@@ -74,7 +74,9 @@ function M:parseNotes(measureString, bpmsTable, nextbeat)
     return measure, nextbeat
 end
 
-function M:createMapExisting(map)
+function M:createMapExisting(path)
+    local map, _ = love.filesystem.read(path)
+    local pathTable = helper.split(path, '/')
     local level = {
         meta = {},
         measures = {}
@@ -99,6 +101,10 @@ function M:createMapExisting(map)
         table.insert(level.bpmsTable, 1, { tonumber(key), tonumber(value) })
     until rest == nil
 
+    pathTable[3] = level.meta['MUSIC']
+    path = table.concat(pathTable, '/')
+    Music['level'] = Create_sound(path, "stream", 0.5)
+
     local rest = level.meta["NOTES"]
     local measure
     local nextbeat = 0
@@ -107,7 +113,6 @@ function M:createMapExisting(map)
         measure, nextbeat = self:parseNotes(measure, level.bpmsTable, nextbeat)
         table.insert(level.measures, measure)
     until rest == nil
-    level.finalbeat = nextbeat
     return level
 end
 

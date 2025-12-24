@@ -14,6 +14,7 @@ function game:init(sm, menu, pause, endLevelState)
     self.endLevelState = endLevelState
     self.levelName = ''
     self.levelIndex = 1
+    self.playing = false
     self.effect:init()
     self:resize()
 end
@@ -97,25 +98,20 @@ function game:draw()
 
     -- notes
     for _, line in ipairs(composer.lines) do
-        if line.lastbeat + self.crochet >= self.songPosition
+        if line.lastbeat + line.crochet >= Music.level.sound:tell()
             and
-            line.lastbeat <= self.songPosition + PlayArea / self.noteSize * self.crochet then
-            line:draw(self.noteSize, self.songPosition, self.laneCoords)
+            line.lastbeat <= Music.level.sound:tell() + PlayArea / self.noteSize * line.crochet then
+            line:draw(self.noteSize, Music.level.sound:tell(), self.laneCoords)
         end
     end
     counter:draw()
 end
 
 function game:update(dt)
-    self.songPosition = self.songPosition + dt
-    if self.songPosition > self.lastbeat + self.crochet then
-        self.lastbeat = self.lastbeat + self.crochet
-        self.beat = self.beat + 1
-        Events.emit("beat", self.beat, self.lastbeat)
-    end
-    composer:updateMeasures(self.songPosition)
+    composer:updateMeasures(Music.level.sound:tell())
 
-    if self.lastbeat > self.level.finalbeat then
+
+    if self.playing and not Music.level.sound:isPlaying() then
         os.exit()
     end
 
@@ -124,18 +120,14 @@ function game:update(dt)
 end
 
 function game:initMap(map)
-    local map, _ = love.filesystem.read(map)
-
     self.level = levelLib:createMapExisting(map)
     composer:init(self.level)
     judge:init(composer, 0.05, 0.06, 0.10)
     counter:init(50, 25, 10, -5)
+    Music.level.sound:stop()
+    Music.level.sound:play()
+    self.playing = true
 
-    self.bpm = levelLib:getBPMS(0, self.level.bpmsTable)
-    self.crochet = 60 / self.bpm
-    self.beat = 0     -- measured in beats
-    self.lastbeat = 0 -- measured in seconds
-    self.songPosition = 0
 
     self.levelInitial = helper.deepcopy(self.level)
 end
@@ -145,8 +137,11 @@ function game:reset()
 end
 
 function game:changedstate(context)
-    if context.from == 'menu' then
+    if context.from == 'menu' or context.from == 'reset' then
         self:initMap("levels/Tetoris/Tetoris.ssc")
+    elseif context.from == 'pause' then
+        Music.level.play()
+        self.playing = true
     end
     --     self.levelName = context.levelName
     --     self.levelIndex = context.levelIndex
@@ -175,6 +170,8 @@ end
 function game:focus(f)
     if not f then
         self.sm:changestate(self.pauseState)
+        self.playing = false
+        Music.level.sound:pause()
         return
     end
 end
@@ -187,7 +184,7 @@ function game:keypressed(key, scancode, isrepeat)
             or key == "right"
             or key == "up"
             or key == "down") then
-        Events.emit(key, self.songPosition)
+        Events.emit(key, Music.level.sound:tell())
     end
 end
 

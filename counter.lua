@@ -15,10 +15,6 @@ function M:init(perfect, good, ok, miss)
     self.ok = ok
     self.miss = miss
     self.fadeout = helper.generate_linear_function(0.5, 1, 0, 0)
-    Events.on("perfect", self.addPerfect)
-    Events.on("good", self.addGood)
-    Events.on("ok", self.addOk)
-    Events.on("miss", self.addMiss)
 end
 
 function M:update(dt)
@@ -66,5 +62,10 @@ function M.addMiss()
     M.timer = M.duration
     M.message = "MISS"
 end
+
+Events.on("perfect", M.addPerfect)
+Events.on("good", M.addGood)
+Events.on("ok", M.addOk)
+Events.on("miss", M.addMiss)
 
 return M

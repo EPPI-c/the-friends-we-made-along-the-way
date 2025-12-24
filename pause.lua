@@ -25,7 +25,7 @@ function M:init(stateMachine, gameState, menuState, configuration)
         {
             text = 'reset',
             clicked = function()
-                self.sm:changestate(self.gameState {from='pause'})
+                self.sm:changestate(self.gameState, {from='reset'})
             end
         },
 

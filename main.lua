@@ -8,7 +8,7 @@ local endLevelState = require("victory")
 local configuration = require('configuration')
 local levelLib = require 'level'
 
-local function create_sound(path, mode, vol)
+function Create_sound(path, mode, vol)
     if not vol then vol = 1 end
     return { sound = love.audio.newSource(path, mode), vol = vol }
 end
