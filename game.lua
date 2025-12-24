@@ -3,6 +3,7 @@ local ui = require 'ui'
 local levelLib = require 'level'
 local composer = require 'composer'
 local judge = require 'judge'
+local counter = require 'counter'
 
 local game = {}
 
@@ -60,12 +61,12 @@ function game.effect.perfect()
 end
 
 function game.effect.good()
-    game.effect.colour = { 0, 1, 0, 1 }
+    game.effect.colour = { 0, 0, 1, 1 }
     game.effect.timer = game.effect.timerAmount
 end
 
 function game.effect.ok()
-    game.effect.colour = { 0, 0, 1, 1 }
+    game.effect.colour = { 0, 1, 0, 1 }
     game.effect.timer = game.effect.timerAmount
 end
 
@@ -102,6 +103,7 @@ function game:draw()
             line:draw(self.noteSize, self.songPosition, self.laneCoords)
         end
     end
+    counter:draw()
 end
 
 function game:update(dt)
@@ -118,6 +120,7 @@ function game:update(dt)
     end
 
     self.effect:update(dt)
+    counter:update(dt)
 end
 
 function game:initMap(map)
@@ -126,6 +129,7 @@ function game:initMap(map)
     self.level = levelLib:createMapExisting(map)
     composer:init(self.level)
     judge:init(composer, 0.05, 0.06, 0.10)
+    counter:init(50, 25, 10, -5)
 
     self.bpm = levelLib:getBPMS(0, self.level.bpmsTable)
     self.crochet = 60 / self.bpm

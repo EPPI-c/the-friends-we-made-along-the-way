@@ -35,6 +35,7 @@ function love.load()
     -- FontFile = 'Alkhemikal.ttf'
     -- Font = love.graphics.newFont(FontFile, 20)
     -- FontBig = love.graphics.newFont(FontFile, 40)
+    love.graphics.setNewFont(40)
     -- Font:setFilter("nearest", "nearest")
     -- FontBig:setFilter("nearest", "nearest")
     -- love.graphics.setFont(Font)

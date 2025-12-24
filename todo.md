@@ -1,4 +1,6 @@
-add playability
-
-add fixed scalable playsize use minimum between screenwidht or height
-
+add music
+add more visuals
+add point system
+add menu
+fix pausemenu scaling
+add characters with modifiers
