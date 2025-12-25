@@ -8,13 +8,22 @@ local M = {
     points = 0,
 }
 
-function M:init(perfect, good, ok, miss)
+function M:init(perfect, good, ok, miss, selectedCharacters)
     self.points = 0
     self.perfect = perfect
     self.good = good
     self.ok = ok
     self.miss = miss
+    self.selectedCharacters = selectedCharacters
     self.fadeout = helper.generate_linear_function(0.5, 1, 0, 0)
+end
+
+function M:calculate(history)
+    local points = 0
+    for _, v in history do
+        points = points + self[v]
+    end
+    return points
 end
 
 function M:update(dt)

@@ -4,6 +4,7 @@ local levelLib = require 'level'
 local composer = require 'composer'
 local judge = require 'judge'
 local counter = require 'counter'
+local characters = require 'character'
 
 local game = {}
 
@@ -119,11 +120,20 @@ function game:update(dt)
     counter:update(dt)
 end
 
-function game:initMap(map)
-    self.level = levelLib:createMapExisting(map)
+function game:initMap(map, selectedCharacters)
+    local perfectTiming = 0.03
+    local goodTiming = 0.06
+    local okTiming = 0.10
+    self.level = levelLib:createMapExisting(map, selectedCharacters)
     composer:init(self.level)
-    judge:init(composer, 0.05, 0.06, 0.10)
-    counter:init(50, 25, 10, -5)
+    if characters.niko:get(selectedCharacters) then
+        Music.level.sound:setPitch(2)
+        perfectTiming = perfectTiming * 2
+        goodTiming = goodTiming * 2
+        okTiming = okTiming * 2
+    end
+    judge:init(composer, perfectTiming, goodTiming, okTiming)
+    counter:init(20, 15, 10, -5, selectedCharacters)
     Music.level.sound:stop()
     Music.level.sound:play()
     self.playing = true
@@ -138,9 +148,10 @@ end
 
 function game:changedstate(context)
     if context.from == 'menu' or context.from == 'reset' then
-        self:initMap("levels/Tetoris/Tetoris.ssc")
+        -- self:initMap("levels/Tetoris/Tetoris.ssc", {characters.niko})
+        self:initMap("levels/Tetoris/Tetoris.ssc", {nil})
     elseif context.from == 'pause' then
-        Music.level:play()
+        Music.level.sound:play()
         self.playing = true
     end
     --     self.levelName = context.levelName

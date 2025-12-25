@@ -1,23 +1,88 @@
 local M = {}
 
-local function createCharacter(name)
+local function createCharacter(name, description)
     local character = {
         name = name,
+        description = description,
     }
 
     function character:remove(list)
-        local k, v
-        v = nil
-        repeat
-            k, v = next(list, k)
-        until v == self
-        table.remove(list, k)
+        for k, v in pairs(list) do
+            if v == self then
+                table.remove(list, k)
+                return
+            end
+        end
+    end
+
+    function character:get(list)
+        for _, v in pairs(list) do
+            if v == self then
+                return v
+            end
+        end
+        return nil
     end
 
     return character
 end
 
-M.clara = createCharacter("Clara")
-M.koko = createCharacter("Koko")
+M.niko = createCharacter("Niko", "Doubles the points but also doubles the speed")
+function M.niko:calculate(history, counter)
+    counter.perfect = counter.perfect * 2
+    counter.good = counter.good * 2
+    counter.ok = counter.ok * 2
+    return counter:calculate(history), history
+end
+
+M.yasashika = createCharacter("Yasashika", "Turns good into perfect")
+function M.yasashika:calculate(history, counter)
+    for i, v in ipairs(history) do
+        if v == "good" then
+            history[i] = "perfect"
+        end
+    end
+    return counter:calculate(history), history
+end
+
+M.kibishika = createCharacter("Kibishika", "dismisses Ok points, in turn increases points by 25%")
+function M.kibishika:calculate(history, counter)
+    counter.perfect = counter.perfect * 1.25
+    counter.good = counter.good * 1.25
+    counter.ok = counter.ok * 1.25
+    for i, v in ipairs(history) do
+        if v == "ok" then
+            history[i] = "miss"
+        end
+    end
+    return counter:calculate(history), history
+end
+
+M.haru = createCharacter("Haru", "Ignores all misses, never stop trying")
+function M.haru:calculate(history, counter)
+    local totalItems = #history
+    local removedItems = 0
+    for i, v in ipairs(history) do
+        if v == "miss" then
+            history[i] = nil
+            removedItems = removedItems + 1
+        end
+    end
+
+    local i = 1
+    local j = 1
+    repeat
+        if j > totalItems - removedItems then
+            history[j] = nil
+            j = j + 1
+        elseif history[i] then
+            history[j] = history[i]
+            j = j + 1
+        end
+        i = i + 1
+    until j > totalItems
+
+    return counter:calculate(history), history
+end
 
 return M

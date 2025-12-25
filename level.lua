@@ -1,4 +1,5 @@
 local helper = require 'helper'
+local characters = require 'character'
 
 local M = {
 }
@@ -74,7 +75,7 @@ function M:parseNotes(measureString, bpmsTable, nextbeat)
     return measure, nextbeat
 end
 
-function M:createMapExisting(path)
+function M:createMapExisting(path, selectedCharacters)
     local map, _ = love.filesystem.read(path)
     local pathTable = helper.split(path, '/')
     local level = {
@@ -99,7 +100,11 @@ function M:createMapExisting(path)
     repeat
         left, rest = helper.splitFirst(rest, ",")
         key, value = helper.splitFirst(left, "=")
-        table.insert(level.bpmsTable, 1, { tonumber(key), tonumber(value) })
+        local bpm = tonumber(value)
+        -- if characters.niko:get(selectedCharacters) then
+        --     bpm = bpm * 2
+        -- end
+        table.insert(level.bpmsTable, 1, { tonumber(key), bpm })
     until rest == nil
 
     pathTable[3] = level.meta['MUSIC']
