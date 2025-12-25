@@ -82,7 +82,8 @@ function M:createMapExisting(path)
         measures = {}
     }
 
-    local rest = map
+    local rest
+    rest = map
     local key, value
     repeat
         key, value, rest = self:parseMetaData(rest)

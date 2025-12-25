@@ -140,7 +140,7 @@ function game:changedstate(context)
     if context.from == 'menu' or context.from == 'reset' then
         self:initMap("levels/Tetoris/Tetoris.ssc")
     elseif context.from == 'pause' then
-        Music.level.play()
+        Music.level:play()
         self.playing = true
     end
     --     self.levelName = context.levelName
