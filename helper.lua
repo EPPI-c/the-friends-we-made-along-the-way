@@ -24,13 +24,13 @@ function M.createImage(path, drawFunction)
 end
 
 function M.remove_empty_lines(str)
-  local lines = {}
-  for line in str:gmatch("([^\r\n]*)\r?\n?") do
-    if line:match("%S") then -- line contains at least one non-whitespace character
-      table.insert(lines, line)
+    local lines = {}
+    for line in str:gmatch("([^\r\n]*)\r?\n?") do
+        if line:match("%S") then -- line contains at least one non-whitespace character
+            table.insert(lines, line)
+        end
     end
-  end
-  return table.concat(lines, "\n")
+    return table.concat(lines, "\n")
 end
 
 function M.deepcopy(obj, seen)
@@ -262,6 +262,56 @@ function M.center_coords(upperLeft, bottomRight, items, horizontal)
     end
 
     return positions
+end
+
+function M.createTimer()
+    local timer = {
+        events = {},
+        timer = 0,
+        index = 0,
+        pause = true,
+    }
+
+    function timer:addEvent(time, fn, argument)
+        table.insert(self.events, { fn = fn, time = time, argument = argument })
+    end
+
+    function timer:start()
+        self.pause = false
+    end
+
+    function timer:reset()
+        self.timer = 0
+        self.index = 0
+        self.pause = true
+    end
+
+    function timer:next()
+        self.index = self.index + 1
+        local event = self.events[self.index]
+        if not event then
+            self.pause = true
+            return false
+        end
+        event.fn(event.argument)
+        if timer < 0 then
+            self.pause = true
+        end
+        self.timer = event.time
+        return true
+    end
+
+    function timer:update(dt)
+        if not self.pause then
+            if timer <= 0 then
+                    self:next()
+                return
+            end
+            timer = timer - dt
+        end
+    end
+
+    return timer
 end
 
 return M

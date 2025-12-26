@@ -113,27 +113,27 @@ function game:update(dt)
 
 
     if self.playing and not Music.level.sound:isPlaying() then
-        os.exit()
+        self.sm:changestate(self.endLevelState, self.selectedCharacters, judge.history, counter)
     end
 
     self.effect:update(dt)
     counter:update(dt)
 end
 
-function game:initMap(map, selectedCharacters)
+function game:initMap(map)
     local perfectTiming = 0.03
     local goodTiming = 0.06
     local okTiming = 0.10
-    self.level = levelLib:createMapExisting(map, selectedCharacters)
+    self.level = levelLib:createMapExisting(map, self.selectedCharacters)
     composer:init(self.level)
-    if characters.niko:get(selectedCharacters) then
+    if characters.niko:get(self.selectedCharacters) then
         Music.level.sound:setPitch(2)
         perfectTiming = perfectTiming * 2
         goodTiming = goodTiming * 2
         okTiming = okTiming * 2
     end
     judge:init(composer, perfectTiming, goodTiming, okTiming)
-    counter:init(20, 15, 10, -5, selectedCharacters)
+    counter:init(20, 15, 10, -5, self.selectedCharacters)
     Music.level.sound:stop()
     Music.level.sound:play()
     self.playing = true
@@ -148,8 +148,9 @@ end
 
 function game:changedstate(context)
     if context.from == 'menu' or context.from == 'reset' then
-        -- self:initMap("levels/Tetoris/Tetoris.ssc", {characters.niko})
-        self:initMap("levels/Tetoris/Tetoris.ssc", {nil})
+        self.selectedCharacters = { characters.niko, characters.yasashika }
+        -- self.selectedCharacters = {}
+        self:initMap("levels/Tetoris/Tetoris.ssc")
     elseif context.from == 'pause' then
         Music.level.sound:play()
         self.playing = true

@@ -1,9 +1,9 @@
 local statemachine = {}
 
-function statemachine:changestate(state, variable)
+function statemachine:changestate(state, ...)
     self.state = state
     if self.state.changedstate then
-        self.state:changedstate(variable)
+        self.state:changedstate(...)
     end
 end
 

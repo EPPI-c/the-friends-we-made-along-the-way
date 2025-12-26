@@ -1,50 +1,62 @@
 local ui = require 'ui'
-local M = {}
+local helper = require 'helper'
 
+local M = {}
 
 function M:init(stateMachine, gameState, menuState)
     self.sm = stateMachine
     self.gameState = gameState
     self.menuState = menuState
-    self.level = '1'
-
-    local menu = ui.createButtonDraw('menu', { 1, 1, 1 }, { 0.7, 0.7, 0 }, { 0.3, 0.3, 0.3 }, { 0, 0.7, 0 })
-    local menu_func = function()
-        self.sm:changestate(self.menuState, nil)
-    end
-    local buttonwidth = 100
-    local buttons = {
-        ui.createButton((ScreenAreaWidth-buttonwidth)/2, ScreenAreaHeight - 100, buttonwidth, 50, menu,
-            menu_func, 1, 0.2),
+    self.timer = helper.createTimer()
+    self.history = {}
+    self.points = {
+        points = 0,
+        newpoints = 0,
+        scaleUp = helper.generate_linear_function(2, 1, 1.5, 1.25),
+        scaleDown = helper.generate_linear_function(1.5, 1.25, 1, 1),
     }
-    self.menu = ui.createKeyBoardNavigationHorizontal(buttons)
-    self.menu.selected = 1
+    function M.points:draw()
+        local scaleFactor = 1
+        if M.timer.timer < 2 and M.timer.timer > 1.5 then
+            scaleFactor = self.scaleUp(M.timer.timer)
+        elseif M.timer.timer <= 1.5 and M.timer.timer > 1 then
+            self.points = self.newpoints
+            scaleFactor = self.scaleDown(M.timer.timer)
+        end
+        love.graphics.push()
+        love.graphics.scale(scaleFactor, scaleFactor)
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf(tostring(self.points), RealWidth, RealHeight, RealWidth - 100, "center")
+        love.graphics.pop()
+    end
 end
 
 function M:update(dt)
-    self.menu:update(dt)
+    self.timer:update(dt)
 end
 
-function M:changedstate(level)
-    Music.music.sound:stop()
-    Music.reverbmusic.sound:stop()
-    if level + 1 > LevelBlock then
-        LevelBlock = level + 1
-        love.filesystem.write('level-block', tostring(LevelBlock))
+local function doCharacterStuff(arg)
+    M.points.newpoints = arg.character:calculate(arg.history, arg.counter)
+end
+
+local function doCounterStuff(arg)
+    M.points.newpoints = arg.counter:calculate(arg.history)
+end
+
+function M:changedstate(selectedCharacters, history, counter)
+    self.selectedCharacters = selectedCharacters
+    self.history = history
+    self.counter = counter
+    self.timer:reset()
+    self.timer.events = {}
+    self.timer:addEvent(2, doCounterStuff, { history = history, counter = counter })
+    for _, character in pairs(selectedCharacters) do
+        self.timer:addEvent(2, doCharacterStuff, { character = character, history = history, counter = counter })
     end
-    self.level = level
 end
 
 function M:draw()
-    self.gameState:draw()
-    love.graphics.setColor(0, 1, 0, 0.5)
-    love.graphics.rectangle("fill", 0, 0, ScreenAreaWidth, ScreenAreaHeight)
-    love.graphics.setColor(1, 1, 1)
-    self.menu:draw()
-    love.graphics.setFont(FontBig)
-    love.graphics.setColor({ 1, 1, 1 })
-    love.graphics.printf("CLEARED", 0, 100, ScreenAreaWidth, 'center')
-    love.graphics.setFont(Font)
+    self.points:draw()
 end
 
 ---@param x number Mouse x position, in pixels.
@@ -54,14 +66,6 @@ end
 ---@param presses number The number of presses in a short time frame and small area, used to simulate double, triple clicks.
 ---@diagnostic disable-next-line: unused-local
 function M:mousepressed(x, y, button, istouch, presses)
-    local hit, nohit = self.menu:checkHit(x, y)
-    for _, b in ipairs(hit) do
-        b.state = 'clicked'
-        b:click()
-    end
-    for _, b in ipairs(nohit) do
-        b.state = 'normal'
-    end
 end
 
 ---@param x number The mouse position on the x-axis.
@@ -71,7 +75,6 @@ end
 ---@param istouch boolean True if the mouse button press originated from a touchscreen touch-press.
 ---@diagnostic disable-next-line: unused-local
 function M:mousemoved(x, y, dx, dy, istouch)
-    self.menu:mousemoved(x, y)
 end
 
 ---@param key string Character of the released key.
@@ -80,7 +83,6 @@ end
 ---Callback function triggered when a keyboard key is pressed.
 ---@diagnostic disable-next-line: unused-local
 function M:keypressed(key, scancode, isrepeat)
-    self.menu:key(key, isrepeat)
 end
 
 return M
