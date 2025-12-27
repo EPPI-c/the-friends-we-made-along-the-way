@@ -9,25 +9,34 @@ function M:init(stateMachine, gameState, menuState)
     self.menuState = menuState
     self.timer = helper.createTimer()
     self.history = {}
+    self.timerMax = 2
+    local upStart = 1.1
+    local upEnd = 1
+    local downEnd = 0.9
+    local normalFont = PlayArea / 10
+    local biggestFont = PlayArea / 5
     self.points = {
         points = 0,
         newpoints = 0,
-        scaleUp = helper.generate_linear_function(2, 1, 1.5, 1.25),
-        scaleDown = helper.generate_linear_function(1.5, 1.25, 1, 1),
+        scaleUp = helper.generate_linear_function(upStart, normalFont, upEnd, biggestFont),
+        scaleDown = helper.generate_linear_function(upEnd, biggestFont, downEnd, normalFont),
+        color = { 0, 1, 0 },
     }
     function M.points:draw()
-        local scaleFactor = 1
-        if M.timer.timer < 2 and M.timer.timer > 1.5 then
+        local scaleFactor = normalFont
+        if M.timer.timer <= upStart and M.timer.timer > upEnd then
             scaleFactor = self.scaleUp(M.timer.timer)
-        elseif M.timer.timer <= 1.5 and M.timer.timer > 1 then
+            love.graphics.setColor(self.color)
+        elseif M.timer.timer <= upEnd and M.timer.timer > downEnd then
+            love.graphics.setColor(self.color)
             self.points = self.newpoints
             scaleFactor = self.scaleDown(M.timer.timer)
+        else
+            love.graphics.setColor(1, 1, 1)
         end
-        love.graphics.push()
-        love.graphics.scale(scaleFactor, scaleFactor)
-        love.graphics.setColor(1, 1, 1)
-        love.graphics.printf(tostring(self.points), RealWidth, RealHeight, RealWidth - 100, "center")
-        love.graphics.pop()
+        local font = love.graphics.setNewFont(scaleFactor)
+        local h = font:getHeight()
+        love.graphics.printf(tostring(self.points), 0, RealHeight / 4 - h / 2, RealWidth, "center")
     end
 end
 
@@ -37,6 +46,14 @@ end
 
 local function doCharacterStuff(arg)
     M.points.newpoints = arg.character:calculate(arg.history, arg.counter)
+    print(arg.character.name, M.points.newpoints - M.points.points)
+    if M.points.newpoints > M.points.points then
+        M.points.color = { 0, 1, 0 }
+    elseif M.points.newpoints < M.points.points then
+        M.points.color = { 1, 0, 0 }
+    else
+        M.points.color = { 1, 1, 1 }
+    end
 end
 
 local function doCounterStuff(arg)
@@ -50,12 +67,15 @@ function M:changedstate(selectedCharacters, history, counter)
     self.timer:reset()
     self.timer.events = {}
     self.timer:addEvent(2, doCounterStuff, { history = history, counter = counter })
-    for _, character in pairs(selectedCharacters) do
+    for i, character in ipairs(selectedCharacters) do
         self.timer:addEvent(2, doCharacterStuff, { character = character, history = history, counter = counter })
     end
+    self.timer:start()
 end
 
 function M:draw()
+    love.graphics.setColor(0.23, 0.23, 0.23)
+    love.graphics.rectangle('fill', 0, 0, RealWidth, RealHeight)
     self.points:draw()
 end
 

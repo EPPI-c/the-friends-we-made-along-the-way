@@ -294,7 +294,7 @@ function M.createTimer()
             return false
         end
         event.fn(event.argument)
-        if timer < 0 then
+        if event.time < 0 then
             self.pause = true
         end
         self.timer = event.time
@@ -303,11 +303,11 @@ function M.createTimer()
 
     function timer:update(dt)
         if not self.pause then
-            if timer <= 0 then
+            if self.timer <= 0 then
                     self:next()
                 return
             end
-            timer = timer - dt
+            self.timer = self.timer - dt
         end
     end
 

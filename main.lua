@@ -6,7 +6,8 @@ local helper = require('helper')
 local pauseState = require("pause")
 local endLevelState = require("victory")
 local configuration = require('configuration')
-local levelLib = require 'level'
+local counter = require 'counter'
+local characters = require 'character'
 
 function Create_sound(path, mode, vol)
     if not vol then vol = 1 end
@@ -35,7 +36,7 @@ function love.load()
     -- FontFile = 'Alkhemikal.ttf'
     -- Font = love.graphics.newFont(FontFile, 20)
     -- FontBig = love.graphics.newFont(FontFile, 40)
-    love.graphics.setNewFont(40)
+    Font = love.graphics.setNewFont(RealHeight/27)
     -- Font:setFilter("nearest", "nearest")
     -- FontBig:setFilter("nearest", "nearest")
     -- love.graphics.setFont(Font)
@@ -69,7 +70,10 @@ function love.load()
     pauseState:init(sm, gameState, menuState, configuration)
     endLevelState:init(sm, gameState, menuState)
     configuration:init(sm)
-    sm:changestate(gameState, {from='menu'})
+    local selectedCharacters = { characters.kisu, characters.niko, characters.kibishika, characters.haru, characters.taida }
+    counter:init(20, 15, 10, -5, selectedCharacters)
+    sm:changestate(gameState, {from='menu'}, selectedCharacters)
+    -- sm:changestate(endLevelState, selectedCharacters, { "ok", "ok", "ok", "miss" }, counter)
 end
 
 function ChangeVolume()
@@ -136,6 +140,7 @@ function love.resize(w, he)
     RealWidth = w
     RealHeight = he
     PlayArea = math.min(RealWidth, RealHeight)
+    Font = love.graphics.setNewFont(RealHeight/27)
     if sm.state.resize then
         sm.state:resize()
     end

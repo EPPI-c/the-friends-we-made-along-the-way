@@ -127,10 +127,15 @@ function game:initMap(map)
     self.level = levelLib:createMapExisting(map, self.selectedCharacters)
     composer:init(self.level)
     if characters.niko:get(self.selectedCharacters) then
-        Music.level.sound:setPitch(2)
+        local pitch = Music.level.sound:getPitch()
+        Music.level.sound:setPitch(pitch * 2)
         perfectTiming = perfectTiming * 2
         goodTiming = goodTiming * 2
         okTiming = okTiming * 2
+    end
+    if characters.taida:get(self.selectedCharacters) then
+        local pitch = Music.level.sound:getPitch()
+        Music.level.sound:setPitch(pitch * 0.5)
     end
     judge:init(composer, perfectTiming, goodTiming, okTiming)
     counter:init(20, 15, 10, -5, self.selectedCharacters)
@@ -146,10 +151,9 @@ function game:reset()
     self.level = helper.deepcopy(self.levelInitial)
 end
 
-function game:changedstate(context)
+function game:changedstate(context, selectedCharacters)
     if context.from == 'menu' or context.from == 'reset' then
-        self.selectedCharacters = { characters.niko, characters.yasashika }
-        -- self.selectedCharacters = {}
+        self.selectedCharacters = selectedCharacters
         self:initMap("levels/Tetoris/Tetoris.ssc")
     elseif context.from == 'pause' then
         Music.level.sound:play()

@@ -4,7 +4,7 @@ local M = {
     timer = 0,
     duration = 1,
     message = '',
-    colour = {1,1,1},
+    colour = { 1, 1, 1 },
     points = 0,
 }
 
@@ -20,7 +20,7 @@ end
 
 function M:calculate(history)
     local points = 0
-    for _, v in history do
+    for _, v in ipairs(history) do
         points = points + self[v]
     end
     return points
@@ -38,7 +38,7 @@ function M:draw()
     if self.timer > 0 then
         self.colour[4] = self.fadeout(self.timer)
         love.graphics.setColor(self.colour)
-        love.graphics.print(self.message, PlayAreaHitbox.bottomRight.x - 200, PlayAreaHitbox.topLeft.y + 50, - 0.2)
+        love.graphics.print(self.message, PlayAreaHitbox.bottomRight.x - 200, PlayAreaHitbox.topLeft.y + 50, -0.2)
     end
     love.graphics.setColor(1, 0, 1)
     love.graphics.print(tostring(self.points), PlayAreaHitbox.topLeft.x + 50, PlayAreaHitbox.topLeft.y + 50)
